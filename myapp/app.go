@@ -43,10 +43,11 @@ func (f *fooHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	user.CreatedAt = time.Now()
 	data, _ := json.Marshal(user)                      // 데이터를 다시 json으로 변환
 	w.Header().Add("Content-Type", "application/json") // 헤더에 콘텐츠 타입을 명시해줘야 json 형식인 걸 알아먹는다.
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	fmt.Fprint(w, string(data))
 }
 
+// NewHttpHandler serve Mux
 func NewHttpHandler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", indexHandler)
