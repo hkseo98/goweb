@@ -26,6 +26,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello World")
 }
 
+// /users로 GET 요청 시 User 리스트 반환
 func usersHandler(w http.ResponseWriter, r *http.Request) {
 	if len(userMap) == 0 {
 		w.WriteHeader(http.StatusOK)
@@ -43,6 +44,7 @@ func usersHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(data))
 }
 
+// /users/{id}로 GET 요청 시 해당 유저 정보 반환
 func getUserInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -64,9 +66,10 @@ func getUserInfo(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(data))
 }
 
+// /users로 유저 정보와 함께 POST 요청 시 유저 생성
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	user := new(User)
-	err := json.NewDecoder(r.Body).Decode(user)
+	err := json.NewDecoder(r.Body).Decode(user) // 유저정보를 디코드하여 user객체에 입력
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
@@ -77,24 +80,24 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	user.ID = lastId
 	user.CreatedAt = time.Now()
 
-	userMap[user.ID] = user
+	userMap[user.ID] = user // userMap에 저장
 
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	data, _ := json.Marshal(user) // json 형식으로 인코딩
 	fmt.Fprint(w, string(data))
-	fmt.Println(lastId)
 }
 
+// /users/id로 DELETE 요청이 왔을 때 해당 유저 삭제
 func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	vars := mux.Vars(r)                 // url 변수 파싱 - gorilla mux 기능
+	id, err := strconv.Atoi(vars["id"]) // 변수를 정수로 변환
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
 		return
 	}
-	_, ok := userMap[id]
+	_, ok := userMap[id] // 해당 아이디의 유저가 있다면
 	if !ok {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "No User ID:", id)
@@ -105,21 +108,23 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Delete User ID:", id)
 }
 
+// /users로 업데이트 정보와 함께 PUT 요청이 왔을 때
 func updateUserHandler(w http.ResponseWriter, r *http.Request) {
 	updateUser := new(User)
-	err := json.NewDecoder(r.Body).Decode(updateUser)
+	err := json.NewDecoder(r.Body).Decode(updateUser) // 업데이트 정보를 updateUser에 저장
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
 		return
 	}
-	user, ok := userMap[updateUser.ID]
+	user, ok := userMap[updateUser.ID] // 해당 유저가 있다면
 	if !ok {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "No User ID:", updateUser.ID)
 		return
 	}
 
+	// 업데이트 정보가 있는 경우에는 그것으로 바꿔줌
 	if updateUser.FirstName != "" {
 		user.FirstName = updateUser.FirstName
 	}

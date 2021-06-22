@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.io/hkseo98/goweb/WEBS/myapp.go"
+	"github.io/hkseo98/goweb/REST/myapp"
 )
 
 func main() {

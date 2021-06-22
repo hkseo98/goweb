@@ -1,4 +1,4 @@
-module github.io/hkseo98/goweb/WEBS
+module github.io/hkseo98/goweb/REST
 
 go 1.16
 
