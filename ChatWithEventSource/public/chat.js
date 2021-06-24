@@ -19,6 +19,7 @@ $(function () {
       $("#user-name").html("<b>" + username + "</b>");
     }
   }
+
   $("#input-form").on("submit", function (e) {
     $.post("/messages", {
       msg: $chatmsg.val(),
@@ -28,7 +29,7 @@ $(function () {
     $chatmsg.focus(); // 다시 포커싱
     return false; // false를 반환해야 다른 페이지로 넘어가지 않음
   });
-
+  // 서버로부터 온 메세지를 html에 반영
   var addMessage = function (data) {
     var text = "";
     if (!isBlank(data.Name)) {
@@ -40,6 +41,7 @@ $(function () {
   };
 
   var es = new EventSource("/stream");
+  // 사용자가 들어왔을 때
   es.onopen = function (e) {
     $.post("/users", {
       name: username,
@@ -47,11 +49,11 @@ $(function () {
   };
 
   es.onmessage = function (e) {
-    // es를 통해서 메세지가 올 때
+    // es를 통해서 메세지가 올 때 - 이벤트의 형태로 전달됨
     var msg = JSON.parse(e.data);
     addMessage(msg);
   };
-
+  // 사용자가 나갔을 때
   window.onbeforeunload = function () {
     $.ajax({
       url: "/users?name=" + username,
